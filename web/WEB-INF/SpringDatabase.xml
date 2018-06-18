@@ -1,0 +1,89 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:property-placeholder location="classpath:application.properties" />
+    <!-- DataSource -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${database.driver}"/>
+        <property name="url" value="${database.url}"/>
+        <property name="username" value="${database.user}"/>
+        <property name="password" value="${database.password}"/>
+    </bean>
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+            <!--    <prop key="hibernate.current_session_context_class">thread</prop>-->
+            </props>
+        </property>
+        <property name="mappingResources">
+            <list>
+                <value>User.hbm.xml</value>
+                <value>UserRole.hbm.xml</value>
+                <value>Post.hbm.xml</value>
+                <value>PostComment.hbm.xml</value>
+            </list>
+        </property>
+        <property name="packagesToScan">
+            <array>
+                <value>com.blog</value>
+           <!--     <value>com.blog.dao</value>
+                <value>com.blog.service</value>-->
+            </array>
+        </property>
+       <!-- <property name="annotatedClasses">
+            <list>
+                <value>com.blog.model.User</value>
+            </list>
+        </property>-->
+    </bean>
+
+    <!-- Transaction -->
+    <bean id="txManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+   <tx:annotation-driven transaction-manager="txManager"/>
+
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" />
+            <tx:method name="find*" read-only="true" />
+            <tx:method name="*" />
+        </tx:attributes>
+    </tx:advice>
+
+    <bean id="userDao" class="com.blog.dao.UserDaoImp">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="postDao" class="com.blog.dao.PostDaoImp">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="myUserDetailsService" class="com.blog.secure.MyUserDetailsService">
+        <property name="userDao" ref="userDao" />
+    </bean>
+    <bean id="authService" class="com.blog.service.AuthService">
+        <property name="detailsService" ref="myUserDetailsService" />
+    </bean>
+    <bean id="userService" class="com.blog.service.UserService">
+        <property name="userDao" ref="userDao" />
+    </bean>
+</beans>

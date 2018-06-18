@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.blog.model.UserRole" table="user_roles" lazy="true" dynamic-update="true" dynamic-insert="true">
+        <id column="id" name="id">
+            <generator class="identity"/>
+        </id>
+        <properties name="UK" unique="true">
+            <many-to-one name="user" class="com.blog.model.User">
+                <column name="user_id" length="11" not-null="true"/>
+            </many-to-one>
+            <property name="role" type="string">
+                <column name="role" length="20" not-null="true" />
+            </property>
+        </properties>
+
+<!--        <property name="user_id">
+            <column name="user_id" not-null="true" />
+        </property>
+        <composite-id >
+            <key-many-to-one name="user" class="com.blog.model.User">
+                <column name="user_id" length="11" not-null="true"/>
+            </key-many-to-one>
+            <key-property name="role" type="string">
+                <column name="role" length="20" not-null="true" />
+            </key-property>
+        </composite-id>-->
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.blog.model.Post" table="posts">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" length="11" />
+            <generator class="identity"/>
+        </id>
+        <many-to-one name="user" class="com.blog.model.User" lazy="false">
+            <column name="user_id" not-null="true" />
+        </many-to-one>
+        <property name="caption" type="java.lang.String">
+            <column name="caption" length="255" not-null="true"/>
+        </property>
+        <property name="body" type="java.lang.String">
+            <column name="body" length="1000" not-null="true"/>
+        </property>
+        <property name="tags" type="java.lang.String">
+            <column name="tags" length="255" not-null="false"/>
+        </property>
+        <property name="date" type="java.util.Date">
+            <column name="date" not-null="true"/>
+        </property>
+        <set name="postComments" order-by="date asc"  table="post_comments" inverse="true" lazy="false" fetch="select" cascade="delete">
+            <key>
+                <column name="post_id" length="11" not-null="true"  />
+            </key>
+            <one-to-many class="com.blog.model.PostComment" />
+        </set>
+    </class>
+</hibernate-mapping>

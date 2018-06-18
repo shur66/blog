@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.blog.model.User" table="users">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" length="11" />
+            <generator class="identity" />
+        </id>
+        <property name="login" unique="true">
+            <column name="login" length="50" not-null="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="password" length="100" not-null="true" />
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="100" not-null="true" />
+        </property>
+        <property name="email" type="string">
+            <column name="email" length="50" not-null="false" />
+        </property>
+        <set name="userRole"  table="user_roles" inverse="true" lazy="false" fetch="select">
+            <key>
+                <column name="user_id" length="11" not-null="true"  />
+            </key>
+            <one-to-many class="com.blog.model.UserRole" />
+        </set>
+        <set name="posts"  table="posts" inverse="true" lazy="false" fetch="select">
+            <key>
+                <column name="user_id" length="11" not-null="true" />
+            </key>
+            <one-to-many class="com.blog.model.Post" />
+        </set>
+    </class>
+</hibernate-mapping>
